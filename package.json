@@ -1,0 +1,33 @@
+{
+  "name": "era-case-study",
+  "version": "1.0.0",
+  "description": "A case study for ERA, a branded house design system where three brands and two colour modes come out of one component set.",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DARKHACK4949/era-case-study.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DARKHACK4949/era-case-study/issues"
+  },
+  "homepage": "https://github.com/DARKHACK4949/era-case-study#readme",
+  "dependencies": {
+    "next": "^15.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.7",
+    "@types/react": "^19.0.8",
+    "typescript": "^5.7.3"
+  },
+  "private": true
+}
