@@ -21,8 +21,14 @@ export default function Page() {
         <p className="eyebrow">Design system · Self directed</p>
         <h1>One system. Three brands. <em>No component knows which.</em></h1>
         <p className="lede">Three brands and two colour modes out of a single component set. This page runs on ERA's own tokens, so the swatches above re-theme it.</p>
+        <p className="lede" style={{marginTop:'1.1rem'}}>
+          I built it to take a branded house further than a Figma library goes:
+          into tokens, components, docs and the code that ships them. Most of
+          what is on this page is what I found out by doing that.
+        </p>
         <dl className="meta">
           <div><dt>Role</dt><dd>Design, tokens, components, docs</dd></div>
+          <div><dt>Timeline</dt><dd>Sept to Oct 2026</dd></div>
           <div><dt>Brands</dt><dd>3, each with its own typeface</dd></div>
           <div><dt>Components</dt><dd>23</dd></div>
           <div><dt>Contrast</dt><dd>138 of 138 at AA</dd></div>
