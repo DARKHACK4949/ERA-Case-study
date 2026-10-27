@@ -156,18 +156,32 @@ html.js .in{opacity:1;transform:none}
 .hero h1{font-size:clamp(2.25rem,4.6vw,4rem);max-width:17ch}
 .hero h1 em{font-style:normal;color:var(--ink-3)}
 .lede{font-size:clamp(1.0625rem,1.5vw,1.1875rem);line-height:1.65;color:var(--ink-2);margin-top:1.4rem;max-width:30rem}
-.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));margin-top:clamp(2.5rem,5vw,3.5rem);border-top:1px solid var(--line)}
-/* Proportional rather than equal: the five values have very different
-   lengths, and equal columns made the longest one wrap to a second line
-   while "23" sat in the same width. */
-@media (min-width:900px){
-  .meta{grid-template-columns:1.6fr 1fr 1.5fr .55fr 1fr}
+/* Explicit column counts rather than auto-fit. auto-fit picks a count from
+   the container width, which at some widths left the longest value a column
+   too narrow for it and broke the words. These counts are chosen so the
+   widest value always fits on one line. */
+.meta{display:grid;grid-template-columns:1fr;margin-top:clamp(2.5rem,5vw,3.5rem);border-top:1px solid var(--line)}
+@media (min-width:560px){ .meta{grid-template-columns:repeat(2,1fr)} }
+@media (min-width:1024px){ .meta{grid-template-columns:1.6fr 1fr 1.5fr .55fr 1fr} }
+.meta div{padding:.9rem 1.25rem .9rem 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+/* The bottom hairline is what makes a wrapped row read as a row; the last
+   visual row does not need one, and neither does the rightmost cell. */
+@media (min-width:1024px){
+  .meta div{border-bottom:0}
+  .meta div:last-child{border-right:0}
 }
+@media (max-width:1023px){
+  .meta div:nth-child(2n){border-right:0}
+  .meta div:nth-last-child(-n+1){border-bottom:0}
+}
+@media (max-width:559px){
+  .meta div{border-right:0}
+  .meta div:last-child{border-bottom:0}
+}
+.meta dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.3rem}
 .meta dd{text-wrap:balance}
 .meta div{padding:.9rem 1.25rem .9rem 0;border-right:1px solid var(--line)}
-.meta div:last-child{border-right:0}
-.meta dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.3rem}
-.meta dd{margin:0;font-size:.9rem;color:var(--ink);font-weight:500}
+.meta dd{margin:0;font-size:.9rem;line-height:1.45;color:var(--ink);font-weight:500}
 
 /* ---------- figures ---------- */
 .frame{
