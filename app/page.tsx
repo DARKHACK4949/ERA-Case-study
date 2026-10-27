@@ -259,7 +259,22 @@ export default function Page() {
       </section>
       </main>
 
-      <footer className="wrap"><p className="footmark"><Mark size={20} /></p><p>ERA is a self directed design system. This page runs on its tokens and switches with it.</p></footer>
+      <footer className="wrap">
+        <p className="footmark"><Mark size={20} /></p>
+        <div className="foot">
+          <div>
+            <p className="foot__note">ERA is a self directed design system. This page runs on its tokens and switches with it.</p>
+            <p className="foot__by">Designed and built by Sanyam Sharma, 2026</p>
+          </div>
+          <nav className="foot__links" aria-label="Elsewhere">
+            <a href="https://sanyam.space" target="_blank" rel="noopener">Portfolio</a>
+            <a href="https://www.linkedin.com/in/sanyamsharma98" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="mailto:sanyamsharma4978@gmail.com">Email</a>
+            <a href="https://github.com/DARKHACK4949/Era-Design-Foundation-Story-book" target="_blank" rel="noopener">Repository</a>
+          </nav>
+        </div>
+        <p className="foot__colophon"><span>Colour scales start from Radix Colors and are re-pointed per brand. Set in IBM Plex Sans, Geist and Source Sans 3, one typeface per brand.</span></p>
+      </footer>
       <Interactive />
     </>
   );

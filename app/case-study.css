@@ -318,6 +318,20 @@ figcaption b{color:var(--ink-2);font-weight:600;display:block}
 footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);color:var(--ink-3);font-size:.8125rem}
 .footmark{margin:0 0 1rem;color:var(--ink-3);line-height:0}
 .footmark svg{display:block}
+.foot{display:grid;gap:1.75rem;margin-bottom:2rem}
+@media (min-width:760px){
+  .foot{grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:3rem}
+}
+.foot p{margin:0}
+.foot__note{max-width:52ch}
+.foot__by{margin-top:1.25rem;color:var(--ink)}
+.foot__links{display:flex;flex-wrap:wrap;gap:.35rem 1.25rem}
+.foot__links a{color:var(--ink-2);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:.1rem;transition:color .18s,border-color .18s}
+.foot__links a:hover{color:var(--ink);border-color:currentColor}
+/* The rule runs the full width of the footer; only the sentence is measured,
+   so the line does not stop halfway across and read as a stray mark. */
+.foot__colophon{margin:0;padding-top:1.75rem;border-top:1px solid var(--line);color:var(--ink-3)}
+.foot__colophon span{display:block;max-width:62ch}
 
 @media (max-width:900px){
   .fills{grid-template-columns:1fr}
