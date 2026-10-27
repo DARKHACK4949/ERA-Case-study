@@ -71,9 +71,11 @@ body[data-scrolled="true"] .bar::after{opacity:.9}
 .bar__mark svg{flex:none;display:block}
 .bar__mark span{color:var(--ink-3);font-weight:400;margin-left:.5rem}
 .bar__sp{flex:1}
-.swatches{display:flex;gap:.375rem}
+/* Enough room for the selected ring to sit in its own space rather than
+   crowding its neighbour. */
+.swatches{display:flex;gap:.625rem}
 .sw{
-  inline-size:1.375rem;block-size:1.375rem;padding:0;cursor:pointer;
+  inline-size:1.5rem;block-size:1.5rem;padding:0;cursor:pointer;
   border-radius:999px;border:1.5px solid var(--line-strong);
   transition:transform .32s var(--spring),box-shadow .2s ease;
 }
@@ -81,9 +83,14 @@ body[data-scrolled="true"] .bar::after{opacity:.9}
 .sw:active{transform:scale(.94);transition-duration:.1s}
 .sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink)}
 .sw:focus-visible,.ghost:focus-visible{outline:2px solid var(--sem-border-focus);outline-offset:2px}
+/* A fixed box. "Dark" and "Light" are different widths, and each brand sets
+   its own typeface, so without this the button resizes on every click and
+   drags the swatches beside it sideways. Measured: 49.9 to 52.9px across the
+   three brands, which is a visible jump on a control you are using. */
 .ghost{
   font:inherit;font-size:.8125rem;cursor:pointer;
-  padding:.3rem .7rem;border-radius:var(--r-btn);
+  min-inline-size:4.5rem;text-align:center;
+  padding:.35rem .7rem;border-radius:var(--r-btn);
   background:transparent;color:var(--ink-2);border:1px solid var(--line-strong);
   transition:transform .1s ease,background .15s ease;
 }
