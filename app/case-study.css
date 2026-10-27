@@ -66,7 +66,9 @@ img{display:block;max-inline-size:100%;block-size:auto}
   opacity:0;transition:opacity .25s ease;pointer-events:none;
 }
 body[data-scrolled="true"] .bar::after{opacity:.9}
-.bar__mark{font-weight:600;letter-spacing:-0.02em;font-size:.95rem}
+.bar__mark{display:flex;align-items:center;gap:.5rem;font-size:.95rem;color:var(--ink)}
+.bar__mark b{font-weight:600;letter-spacing:-0.01em}
+.bar__mark svg{flex:none;display:block}
 .bar__mark span{color:var(--ink-3);font-weight:400;margin-left:.5rem}
 .bar__sp{flex:1}
 .swatches{display:flex;gap:.375rem}
