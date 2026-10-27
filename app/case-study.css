@@ -162,15 +162,25 @@ html.js .in{opacity:1;transform:none}
    widest value always fits on one line. */
 .meta{display:grid;grid-template-columns:1fr;margin-top:clamp(2.5rem,5vw,3.5rem);border-top:1px solid var(--line)}
 @media (min-width:560px){ .meta{grid-template-columns:repeat(2,1fr)} }
-@media (min-width:1024px){ .meta{grid-template-columns:1.6fr 1fr 1.5fr .55fr 1fr} }
-.meta div{padding:.9rem 1.25rem .9rem 0;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+@media (min-width:1100px){ .meta{grid-template-columns:1.6fr 1fr 1.5fr .55fr 1fr} }
+/* Padding on both sides, so a value sits in the middle of its cell rather
+   than hard against the divider in front of it. The cell that starts a row
+   loses its left padding so the column still lines up with the page. */
+.meta div{padding:.9rem 1.5rem;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.meta div{padding-inline-start:0}
 /* The bottom hairline is what makes a wrapped row read as a row; the last
    visual row does not need one, and neither does the rightmost cell. */
-@media (min-width:1024px){
-  .meta div{border-bottom:0}
-  .meta div:last-child{border-right:0}
+@media (min-width:1100px){
+  .meta div{border-bottom:0;padding-inline-start:1.5rem}
+  .meta div:first-child{padding-inline-start:0}
+  .meta div:last-child{border-right:0;padding-inline-end:0}
 }
-@media (max-width:1023px){
+@media (min-width:560px) and (max-width:1099px){
+  .meta div{padding-inline-start:1.5rem}
+  .meta div:nth-child(odd){padding-inline-start:0}
+  .meta div:nth-child(2n){padding-inline-end:0}
+}
+@media (max-width:1099px){
   .meta div:nth-child(2n){border-right:0}
   /* An odd last cell would sit in a half-row with its divider running down
      the empty half. Let it take the whole row instead. */
@@ -178,12 +188,11 @@ html.js .in{opacity:1;transform:none}
   .meta div:last-child{border-right:0;border-bottom:0}
 }
 @media (max-width:559px){
-  .meta div{border-right:0}
+  .meta div{border-right:0;padding-inline:0}
   .meta div:last-child{border-bottom:0}
 }
 .meta dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.3rem}
 .meta dd{text-wrap:balance}
-.meta div{padding:.9rem 1.25rem .9rem 0;border-right:1px solid var(--line)}
 .meta dd{margin:0;font-size:.9rem;line-height:1.45;color:var(--ink);font-weight:500}
 
 /* ---------- figures ---------- */
@@ -319,7 +328,6 @@ footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);colo
   .trio,.duo{grid-template-columns:1fr}
   .chain__row{grid-template-columns:1fr;gap:.35rem}
   .val{white-space:normal}
-  .meta div{border-right:0;border-bottom:1px solid var(--line)}
   .ramp__row{grid-template-columns:1fr auto;row-gap:.5rem}
   .gallery{grid-template-columns:1fr}
   .g-3,.g-2{grid-column:span 1}
