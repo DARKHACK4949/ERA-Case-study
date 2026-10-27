@@ -299,3 +299,131 @@ footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);colo
 @media (prefers-reduced-transparency:reduce){
   .bar{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:1px solid var(--line)}
 }
+
+/* ============================================================
+   Wide screens: use the width instead of leaving it empty
+   ============================================================ */
+
+/* The measure stays readable, so on a wide viewport a left-aligned column
+   left roughly a thousand pixels of nothing to its right. The eyebrow moves
+   into a sticky rail in that space: the section you are in stays visible
+   while you read it, and the page reads as a spread rather than a column
+   pushed against one edge. */
+@media (min-width: 1080px) {
+  :root { --measure: 36rem; }
+  .wrap { max-width: 78rem; }
+
+  /* Body sections: the eyebrow becomes a sticky rail in the space the measure
+     was leaving empty, so the section you are in stays visible while you read
+     it. The hero is excluded; it has its own two-column arrangement below. */
+  section.wrap:not(.hero) {
+    display: grid;
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    column-gap: 4.5rem;
+  }
+  section.wrap:not(.hero) > :not(.eyebrow) { grid-column: 2; }
+  section.wrap:not(.hero) > .eyebrow {
+    grid-column: 1;
+    grid-row: 1;
+    position: sticky;
+    top: 5.5rem;
+    align-self: start;
+    margin: 0;
+    text-align: right;
+    line-height: 1.5;
+  }
+  /* Evidence earns the full spread; prose keeps its measure. */
+  .trio, .duo, .gallery, figure.wide, .fills, .stats { max-width: none; }
+
+  /* Hero: text left, the active brand shown on the right. */
+  .hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.7fr);
+    column-gap: 4.5rem;
+    align-items: start;
+  }
+  .hero > .eyebrow, .hero > h1, .hero > .lede { grid-column: 1; }
+  .hero > .meta { grid-column: 1 / -1; }
+  .brandcard { grid-column: 2; grid-row: 2 / span 3; align-self: start; }
+}
+
+/* ---------- the active brand, shown rather than described ---------- */
+.brandcard {
+  display: none;
+  border: 1px solid var(--line);
+  border-radius: var(--r-card);
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  overflow: hidden;
+}
+@media (min-width: 1080px) { .brandcard { display: block; } }
+.brandcard__word { padding: 1.75rem 1.75rem 1.4rem; }
+.brandcard__facts > div { padding: .65rem 1.75rem; }
+.brandcard__word {
+  font-size: clamp(3.5rem, 7vw, 5.5rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  padding: 2rem 2rem 1.5rem;
+  color: var(--accent-ink);
+  transition: color .45s var(--ease-out);
+}
+.brandcard__facts { margin: 0; border-top: 1px solid var(--line); }
+.brandcard__facts > div {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding: .7rem 2rem; border-bottom: 1px solid var(--line);
+}
+.brandcard__facts > div:last-child { border-bottom: 0; }
+.brandcard__facts dt {
+  font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+}
+.brandcard__facts dd { margin: 0; font-size: .875rem; font-weight: 500; }
+.brandcard__hex { display: flex; align-items: center; gap: .5rem; font-family: var(--mono); font-size: .8125rem; }
+.brandcard__hex i {
+  inline-size: .9rem; block-size: .9rem; border-radius: 4px; flex: none;
+  border: 1px solid var(--line-strong); background: var(--accent);
+  transition: background-color .45s var(--ease-out);
+}
+
+/* ============================================================
+   Background field
+   ============================================================ */
+.field { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+
+/* ERA's own 8px grid at six steps, faded out down the page so it reads as
+   paper texture rather than a wireframe. */
+.field__grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: .4;
+  block-size: 70vh;
+}
+
+/* One blurred blob in the active accent. Only its transform changes, so the
+   pointer never costs a layout or a repaint. */
+.field__glow {
+  position: absolute; inset-block-start: 0; inset-inline-start: 0;
+  inline-size: 30rem; block-size: 30rem; margin: -15rem 0 0 -15rem;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 62%);
+  opacity: .1;
+  transform: translate3d(50vw, 36vh, 0);
+  transition: opacity .6s var(--ease-out), background-color .45s var(--ease-out);
+}
+html[data-theme='dark'] .field__glow { opacity: .14; }
+
+main, header.bar, footer, .progress { position: relative; z-index: 1; }
+header.bar { z-index: 50; }
+
+@media (prefers-reduced-motion: reduce) {
+  /* A large moving background is exactly what this setting is about. */
+  .field__glow { transform: translate3d(50vw, 34vh, 0) !important; transition: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .field__glow { display: none; }
+  .brandcard { background: var(--card); backdrop-filter: none; -webkit-backdrop-filter: none; }
+}

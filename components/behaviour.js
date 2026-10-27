@@ -74,6 +74,12 @@ export default function init() {
       var ramp=document.querySelector('[data-ramp]');
       if(ramp) ramp.textContent=RAMP[brand].charAt(0).toUpperCase()+RAMP[brand].slice(1);
       var face=document.querySelector('[data-face]'); if(face) face.textContent=FACE[brand];
+
+      var accent=read(root,'--sem-primary-bg');
+      var bcb=document.querySelector('[data-bc-brand]');
+      if(bcb) bcb.textContent='Brand '+brand.slice(-1);
+      var bcf=document.querySelector('[data-bc-face]'); if(bcf) bcf.textContent=FACE[brand];
+      var bch=document.querySelector('[data-bc-hex]'); if(bch) bch.textContent=accent||'';
       var rad=document.querySelector('[data-radius]'); if(rad) rad.textContent=read(root,'--brand-radius-roles-buttons-button-md');
       var onfill=document.querySelector('[data-onfill]');
       if(onfill){
@@ -166,6 +172,28 @@ export default function init() {
 
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paint);
     paint();
+
+    /* ---------- background glow ----------
+       Follows the pointer with a critically damped ease: it never overshoots,
+       and because only its transform changes it costs one composited layer and
+       nothing else. Skipped where there is no pointer to follow, or where the
+       reader asked for less motion. */
+    var glow=document.querySelector('.field__glow');
+    var fine=!!(window.matchMedia&&matchMedia('(hover:hover) and (pointer:fine)').matches);
+    if(glow&&fine&&!reduce){
+      var tx=innerWidth*0.5, ty=innerHeight*0.36, cx=tx, cy=ty, raf=0;
+      var frame=function(){
+        cx+=(tx-cx)*0.08; cy+=(ty-cy)*0.08;
+        glow.style.transform='translate3d('+cx.toFixed(1)+'px,'+cy.toFixed(1)+'px,0)';
+        raf=(Math.abs(tx-cx)>0.5||Math.abs(ty-cy)>0.5)?requestAnimationFrame(frame):0;
+      };
+      var onMove=function(e){ tx=e.clientX; ty=e.clientY; if(!raf) raf=requestAnimationFrame(frame); };
+      window.addEventListener('pointermove',onMove,{passive:true});
+      cleanups.push(function(){
+        window.removeEventListener('pointermove',onMove);
+        if(raf) cancelAnimationFrame(raf);
+      });
+    }
 
     /* ---------- entrance, one shot ---------- */
     var SEL='.hero .eyebrow,.hero h1,.hero .lede,.hero .meta,'

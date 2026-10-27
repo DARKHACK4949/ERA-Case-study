@@ -4,6 +4,13 @@ import Interactive from '@/components/Interactive';
 export default function Page() {
   return (
     <>
+      {/* Behind everything: ERA's own 8px grid, plus one blurred blob in the
+          active brand accent that follows the pointer. Transform only. */}
+      <div className="field" aria-hidden="true">
+        <div className="field__grid"></div>
+        <div className="field__glow"></div>
+      </div>
+
       <div className="progress" aria-hidden="true"></div>
       
       <header className="bar">
@@ -26,6 +33,18 @@ export default function Page() {
           into tokens, components, docs and the code that ships them. Most of
           what is on this page is what I found out by doing that.
         </p>
+        {/* Fills the right half with the thesis rather than whitespace: the
+            wordmark is set in whichever brand is active, so it changes face,
+            colour and corner treatment as you switch. */}
+        <aside className="brandcard" aria-label="Active brand">
+          <div className="brandcard__word" data-word>ERA</div>
+          <dl className="brandcard__facts">
+            <div><dt>Brand</dt><dd data-bc-brand>Brand 1</dd></div>
+            <div><dt>Typeface</dt><dd data-bc-face>IBM Plex Sans</dd></div>
+            <div><dt>Accent</dt><dd className="brandcard__hex"><i data-bc-chip></i><span data-bc-hex>#5b5bd6</span></dd></div>
+          </dl>
+        </aside>
+
         <dl className="meta">
           <div><dt>Role</dt><dd>Design, tokens, components, docs</dd></div>
           <div><dt>Timeline</dt><dd>Sept to Oct 2026</dd></div>
