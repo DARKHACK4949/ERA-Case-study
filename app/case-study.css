@@ -32,11 +32,17 @@
 html{-webkit-text-size-adjust:100%}
 body{
   margin:0;background:var(--paper);color:var(--ink);
-  font-family:var(--sans);font-size:1.0625rem;line-height:1.6;
+  font-family:var(--sans);font-size:1.0625rem;line-height:1.7;
   font-synthesis-weight:none;-webkit-font-smoothing:antialiased;
   overflow-x:hidden;
 }
-h1,h2,h3{margin:0;line-height:1.08;letter-spacing:-0.032em;font-weight:600;font-optical-sizing:auto}
+h1,h2,h3{margin:0;font-optical-sizing:auto}
+/* Display type gets lighter and more open as it grows, not heavier and
+   tighter. Tracking is size specific: large text needs less of it, not a
+   single value applied everywhere. */
+h1{font-weight:500;line-height:1.14;letter-spacing:-0.025em}
+h2{font-weight:500;line-height:1.2;letter-spacing:-0.02em}
+h3{font-weight:600;line-height:1.4;letter-spacing:-0.008em}
 p{margin:0}
 a{color:var(--accent-ink)}
 code{font-family:var(--mono);font-size:.86em}
@@ -88,8 +94,8 @@ body[data-scrolled="true"] .bar::after{opacity:.9}
 section{padding-block:clamp(4.5rem,10vw,8rem)}
 .rule{border:0;border-top:1px solid var(--line);margin:0}
 .eyebrow{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin-bottom:1.1rem}
-h2{font-size:clamp(1.75rem,3.6vw,2.6rem);margin-bottom:1rem;letter-spacing:-0.035em}
-h3{font-size:1.0625rem;margin-bottom:.4rem;letter-spacing:-0.012em}
+h2{font-size:clamp(1.5rem,2.6vw,2.125rem);margin-bottom:1.1rem}
+h3{font-size:1.0625rem;margin-bottom:.4rem}
 .body{color:var(--ink-2)}
 .body strong{color:var(--ink);font-weight:600}
 .note{font-size:.8125rem;color:var(--ink-3);margin-top:.85rem;line-height:1.5}
@@ -138,9 +144,9 @@ html.js .in{opacity:1;transform:none}
 
 /* ---------- hero ---------- */
 .hero{padding-top:clamp(3rem,7vw,5.5rem);padding-bottom:clamp(3rem,6vw,4.5rem)}
-.hero h1{font-size:clamp(2.5rem,7.6vw,5.25rem);letter-spacing:-0.046em;max-width:15ch}
+.hero h1{font-size:clamp(2.25rem,4.6vw,4rem);max-width:17ch}
 .hero h1 em{font-style:normal;color:var(--ink-3)}
-.lede{font-size:clamp(1.0625rem,1.8vw,1.25rem);line-height:1.5;color:var(--ink-2);margin-top:1.4rem;max-width:30rem}
+.lede{font-size:clamp(1.0625rem,1.5vw,1.1875rem);line-height:1.65;color:var(--ink-2);margin-top:1.4rem;max-width:30rem}
 .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));margin-top:clamp(2.5rem,5vw,3.5rem);border-top:1px solid var(--line)}
 .meta div{padding:.9rem 1rem .9rem 0;border-right:1px solid var(--line)}
 .meta div:last-child{border-right:0}
@@ -195,7 +201,7 @@ figcaption b{color:var(--ink-2);font-weight:600;display:block}
 /* ---------- stats ---------- */
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;margin-top:2.25rem}
 .stat{background:var(--card);padding:1.4rem}
-.stat b{display:block;font-size:clamp(1.9rem,4.2vw,2.6rem);font-weight:600;letter-spacing:-0.045em;line-height:1;font-variant-numeric:tabular-nums}
+.stat b{display:block;font-size:clamp(1.75rem,3vw,2.25rem);font-weight:500;letter-spacing:-0.022em;line-height:1;font-variant-numeric:tabular-nums}
 .stat span{display:block;margin-top:.45rem;font-size:.8125rem;color:var(--ink-3);line-height:1.4}
 .stat.good b{color:var(--accent-ink)}
 .stat.bad b{color:var(--bad)}
@@ -350,26 +356,21 @@ footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);colo
 /* ---------- the active brand, shown rather than described ---------- */
 .brandcard {
   display: none;
-  border: 1px solid var(--line);
-  border-radius: var(--r-card);
-  background: color-mix(in srgb, var(--card) 72%, transparent);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  overflow: hidden;
+  border-top: 1px solid var(--line-strong);
 }
 @media (min-width: 1080px) { .brandcard { display: block; } }
-.brandcard__word { padding: 1.75rem 1.75rem 1.4rem; }
-.brandcard__facts > div { padding: .65rem 1.75rem; }
+.brandcard__word { padding: 1.4rem 0 1.6rem; }
+.brandcard__facts > div { padding: .7rem 0; }
 .brandcard__word {
-  font-size: clamp(3.5rem, 7vw, 5.5rem);
-  font-weight: 600;
-  letter-spacing: -0.05em;
+  font-size: clamp(2.75rem, 4.4vw, 3.75rem);
+  font-weight: 500;
+  letter-spacing: -0.03em;
   line-height: 1;
   padding: 2rem 2rem 1.5rem;
   color: var(--accent-ink);
   transition: color .45s var(--ease-out);
 }
-.brandcard__facts { margin: 0; border-top: 1px solid var(--line); }
+.brandcard__facts { margin: 0; }
 .brandcard__facts > div {
   display: flex; align-items: center; justify-content: space-between;
   gap: 1rem; padding: .7rem 2rem; border-bottom: 1px solid var(--line);
@@ -405,36 +406,16 @@ section.wrap:not(.hero) { counter-increment: sec; }
   section.wrap:not(.hero) > .eyebrow::before {
     content: counter(sec, decimal-leading-zero);
     display: block;
-    font-size: 4rem;
-    line-height: .85;
-    font-weight: 600;
-    letter-spacing: -.05em;
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 500;
+    letter-spacing: -.02em;
     color: var(--ink);
-    opacity: .08;
-    margin-block-end: .65rem;
+    opacity: .13;
+    margin-block-end: .8rem;
   }
-  html[data-theme='dark'] section.wrap:not(.hero) > .eyebrow::before { opacity: .14; }
+  html[data-theme='dark'] section.wrap:not(.hero) > .eyebrow::before { opacity: .2; }
 
-  /* Margin rule, with a trim tick where the section begins. */
-  section.wrap:not(.hero)::before {
-    content: '';
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 10.5rem;
-    margin-inline-start: -2.25rem;
-    inline-size: 1px;
-    background: var(--line);
-  }
-  section.wrap:not(.hero)::after {
-    content: '';
-    position: absolute;
-    inset-block-start: 0;
-    inset-inline-start: 10.5rem;
-    margin-inline-start: -2.6rem;
-    inline-size: 9px;
-    block-size: 1px;
-    background: var(--line-strong);
-  }
 }
 
 main, header.bar, footer, .progress { position: relative; z-index: 1; }
