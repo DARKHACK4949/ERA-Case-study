@@ -172,7 +172,10 @@ html.js .in{opacity:1;transform:none}
 }
 @media (max-width:1023px){
   .meta div:nth-child(2n){border-right:0}
-  .meta div:nth-last-child(-n+1){border-bottom:0}
+  /* An odd last cell would sit in a half-row with its divider running down
+     the empty half. Let it take the whole row instead. */
+  .meta div:last-child:nth-child(odd){grid-column:1 / -1}
+  .meta div:last-child{border-right:0;border-bottom:0}
 }
 @media (max-width:559px){
   .meta div{border-right:0}
