@@ -4,13 +4,6 @@ import Interactive from '@/components/Interactive';
 export default function Page() {
   return (
     <>
-      {/* Behind everything: ERA's own 8px grid, plus one blurred blob in the
-          active brand accent that follows the pointer. Transform only. */}
-      <div className="field" aria-hidden="true">
-        <div className="field__grid"></div>
-        <div className="field__glow"></div>
-      </div>
-
       <div className="progress" aria-hidden="true"></div>
       
       <header className="bar">

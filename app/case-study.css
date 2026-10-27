@@ -104,7 +104,7 @@ html.js :where(
   .hero .eyebrow, .hero h1, .hero .lede, .hero .meta,
   section > .eyebrow, section > h2, section > .body, section > h3,
   .trio figure, .duo figure, .gallery figure, figure.wide,
-  .chain, .stats, .ramp__row, .fill, .mode, .bug, .spec, .links, .open
+  .chain, .stats, .ramp__row, .fill, .mode, .bug, .spec, .links, .open, .brandcard
 ){
   opacity:0;transform:translateY(14px);
   transition:opacity .62s var(--ease-out),transform .62s var(--ease-out);
@@ -387,43 +387,59 @@ footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);colo
 }
 
 /* ============================================================
-   Background field
-   ============================================================ */
-.field { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+   Page furniture
+   ============================================================
+   No background. A blurred blob floating over a grid is the default every
+   generated landing page ships, and it says nothing about this system. What
+   is here instead is printed-page furniture: a folio number per section, and
+   a margin rule ticked where each section starts. Both are structural, both
+   are static, and neither competes with the evidence. */
 
-/* ERA's own 8px grid at six steps, faded out down the page so it reads as
-   paper texture rather than a wireframe. */
-.field__grid {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(to right, var(--line) 1px, transparent 1px),
-    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
-  background-size: 48px 48px;
-  opacity: .4;
-  block-size: 70vh;
-}
+body { counter-reset: sec; }
+section.wrap:not(.hero) { counter-increment: sec; }
 
-/* One blurred blob in the active accent. Only its transform changes, so the
-   pointer never costs a layout or a repaint. */
-.field__glow {
-  position: absolute; inset-block-start: 0; inset-inline-start: 0;
-  inline-size: 30rem; block-size: 30rem; margin: -15rem 0 0 -15rem;
-  border-radius: 50%;
-  background: radial-gradient(circle, var(--accent) 0%, transparent 62%);
-  opacity: .1;
-  transform: translate3d(50vw, 36vh, 0);
-  transition: opacity .6s var(--ease-out), background-color .45s var(--ease-out);
+@media (min-width: 1080px) {
+  section.wrap:not(.hero) { position: relative; }
+
+  /* The folio sits above the section label, set in the brand's own face. */
+  section.wrap:not(.hero) > .eyebrow::before {
+    content: counter(sec, decimal-leading-zero);
+    display: block;
+    font-size: 4rem;
+    line-height: .85;
+    font-weight: 600;
+    letter-spacing: -.05em;
+    color: var(--ink);
+    opacity: .08;
+    margin-block-end: .65rem;
+  }
+  html[data-theme='dark'] section.wrap:not(.hero) > .eyebrow::before { opacity: .14; }
+
+  /* Margin rule, with a trim tick where the section begins. */
+  section.wrap:not(.hero)::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 10.5rem;
+    margin-inline-start: -2.25rem;
+    inline-size: 1px;
+    background: var(--line);
+  }
+  section.wrap:not(.hero)::after {
+    content: '';
+    position: absolute;
+    inset-block-start: 0;
+    inset-inline-start: 10.5rem;
+    margin-inline-start: -2.6rem;
+    inline-size: 9px;
+    block-size: 1px;
+    background: var(--line-strong);
+  }
 }
-html[data-theme='dark'] .field__glow { opacity: .14; }
 
 main, header.bar, footer, .progress { position: relative; z-index: 1; }
 header.bar { z-index: 50; }
 
-@media (prefers-reduced-motion: reduce) {
-  /* A large moving background is exactly what this setting is about. */
-  .field__glow { transform: translate3d(50vw, 34vh, 0) !important; transition: none; }
-}
 @media (prefers-reduced-transparency: reduce) {
-  .field__glow { display: none; }
   .brandcard { background: var(--card); backdrop-filter: none; -webkit-backdrop-filter: none; }
 }

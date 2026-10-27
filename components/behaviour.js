@@ -173,30 +173,11 @@ export default function init() {
     if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paint);
     paint();
 
-    /* ---------- background glow ----------
-       Follows the pointer with a critically damped ease: it never overshoots,
-       and because only its transform changes it costs one composited layer and
-       nothing else. Skipped where there is no pointer to follow, or where the
-       reader asked for less motion. */
-    var glow=document.querySelector('.field__glow');
-    var fine=!!(window.matchMedia&&matchMedia('(hover:hover) and (pointer:fine)').matches);
-    if(glow&&fine&&!reduce){
-      var tx=innerWidth*0.5, ty=innerHeight*0.36, cx=tx, cy=ty, raf=0;
-      var frame=function(){
-        cx+=(tx-cx)*0.08; cy+=(ty-cy)*0.08;
-        glow.style.transform='translate3d('+cx.toFixed(1)+'px,'+cy.toFixed(1)+'px,0)';
-        raf=(Math.abs(tx-cx)>0.5||Math.abs(ty-cy)>0.5)?requestAnimationFrame(frame):0;
-      };
-      var onMove=function(e){ tx=e.clientX; ty=e.clientY; if(!raf) raf=requestAnimationFrame(frame); };
-      window.addEventListener('pointermove',onMove,{passive:true});
-      cleanups.push(function(){
-        window.removeEventListener('pointermove',onMove);
-        if(raf) cancelAnimationFrame(raf);
-      });
-    }
-
-    /* ---------- entrance, one shot ---------- */
-    var SEL='.hero .eyebrow,.hero h1,.hero .lede,.hero .meta,'
+    /* ---------- entrance, one shot ----------
+       IntersectionObserver on small elements, staggered within each group.
+       Each element unobserves itself and drops will-change once its transition
+       ends, so nothing stays composited and nothing runs on the scroll path. */
+    var SEL='.hero .eyebrow,.hero h1,.hero .lede,.hero .meta,.brandcard,'
           + 'section > .eyebrow,section > h2,section > .body,section > h3,'
           + '.trio figure,.duo figure,.gallery figure,figure.wide,'
           + '.chain,.stats,.ramp__row,.fill,.mode,.bug,.spec,.links,.open';
@@ -205,7 +186,6 @@ export default function init() {
     if(reduce||!('IntersectionObserver' in window)){
       items.forEach(function(el){ el.classList.add('in'); });
     } else {
-      /* stagger within a group, so siblings arrive in sequence rather than together */
       var seen=new Map();
       var io=new IntersectionObserver(function(entries){
         entries.forEach(function(e){
@@ -216,7 +196,7 @@ export default function init() {
           el.style.willChange='opacity,transform';
           el.classList.add('in');
           el.addEventListener('transitionend',function once(){
-            el.style.willChange='';            /* stop paying for the layer */
+            el.style.willChange='';
             el.style.transitionDelay='';
             el.removeEventListener('transitionend',once);
           });
