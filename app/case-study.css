@@ -66,7 +66,7 @@ img{display:block;max-inline-size:100%;block-size:auto}
   opacity:0;transition:opacity .25s ease;pointer-events:none;
 }
 body[data-scrolled="true"] .bar::after{opacity:.9}
-.bar__mark{display:flex;align-items:center;gap:.5rem;font-size:.95rem;color:var(--ink)}
+.bar__mark{display:flex;align-items:center;gap:.6rem;font-size:1rem;color:var(--ink)}
 .bar__mark b{font-weight:600;letter-spacing:-0.01em}
 .bar__mark svg{flex:none;display:block}
 .bar__mark span{color:var(--ink-3);font-weight:400;margin-left:.5rem}
@@ -150,7 +150,14 @@ html.js .in{opacity:1;transform:none}
 .hero h1 em{font-style:normal;color:var(--ink-3)}
 .lede{font-size:clamp(1.0625rem,1.5vw,1.1875rem);line-height:1.65;color:var(--ink-2);margin-top:1.4rem;max-width:30rem}
 .meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));margin-top:clamp(2.5rem,5vw,3.5rem);border-top:1px solid var(--line)}
-.meta div{padding:.9rem 1rem .9rem 0;border-right:1px solid var(--line)}
+/* Proportional rather than equal: the five values have very different
+   lengths, and equal columns made the longest one wrap to a second line
+   while "23" sat in the same width. */
+@media (min-width:900px){
+  .meta{grid-template-columns:1.6fr 1fr 1.5fr .55fr 1fr}
+}
+.meta dd{text-wrap:balance}
+.meta div{padding:.9rem 1.25rem .9rem 0;border-right:1px solid var(--line)}
 .meta div:last-child{border-right:0}
 .meta dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.3rem}
 .meta dd{margin:0;font-size:.9rem;color:var(--ink);font-weight:500}
@@ -276,6 +283,8 @@ figcaption b{color:var(--ink-2);font-weight:600;display:block}
 .open{padding-left:1.05rem;margin-top:1.1rem;max-width:40rem}
 .open li{margin-bottom:.5rem;color:var(--ink-2);font-size:.95rem}
 footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);color:var(--ink-3);font-size:.8125rem}
+.footmark{margin:0 0 1rem;color:var(--ink-3);line-height:0}
+.footmark svg{display:block}
 
 @media (max-width:900px){
   .fills{grid-template-columns:1fr}

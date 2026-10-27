@@ -8,7 +8,7 @@ export default function Page() {
       <div className="progress" aria-hidden="true"></div>
       
       <header className="bar">
-        <span className="bar__mark"><Mark size={18} /><b>ERA</b><span>Case study</span></span>
+        <span className="bar__mark"><Mark size={26} /><b>ERA</b><span>Case study</span></span>
         <span className="bar__sp"></span>
         <div className="swatches" role="group" aria-label="Brand">
           <button className="sw" data-b="brand-1" aria-label="Brand 1" aria-pressed="true"  style={{"background": "#5b5bd6"}}></button>
@@ -259,7 +259,7 @@ export default function Page() {
       </section>
       </main>
 
-      <footer className="wrap"><p>ERA is a self directed design system. This page runs on its tokens and switches with it.</p></footer>
+      <footer className="wrap"><p className="footmark"><Mark size={20} /></p><p>ERA is a self directed design system. This page runs on its tokens and switches with it.</p></footer>
       <Interactive />
     </>
   );
