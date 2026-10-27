@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="en" data-brand="brand-1" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERA Design System</title>
+<link rel="stylesheet" href="era.css">
+<style>
+/* Self hosted, because a case study whose first bug is "the fonts never loaded"
+   should not depend on a font CDN to prove that three typefaces exist. */
+@font-face{font-family:"IBM Plex Sans";src:url(font/plex.woff2) format("woff2-variations");font-weight:100 700;font-display:swap}
+@font-face{font-family:"Geist";src:url(font/geist.woff2) format("woff2-variations");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Source Sans 3";src:url(font/source.woff2) format("woff2-variations");font-weight:200 900;font-display:swap}
+
+:root{
+  --ink:var(--sem-fg-primary);
+  --ink-2:var(--sem-fg-secondary);
+  --ink-3:var(--sem-fg-tertiary);
+  --paper:var(--sem-bg-canvas);
+  --card:var(--sem-bg-surface);
+  --sunk:var(--sem-bg-surface-sunken);
+  --line:var(--sem-border-divider);
+  --line-strong:var(--sem-border-default);
+  --accent:var(--sem-primary-bg);
+  --accent-fg:var(--sem-primary-fg-on-bg);
+  --accent-soft:var(--sem-primary-bg-subtle);
+  --accent-ink:var(--sem-fg-brand);
+  --bad:var(--sem-form-error-fg);
+  --sans:var(--brand-typography-theme-font-family-font);
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+  --r-card:var(--brand-radius-roles-card-md);
+  --r-chip:var(--brand-radius-roles-tags-chips-md);
+  --r-btn:var(--brand-radius-roles-buttons-button-md);
+  --measure:34rem;
+  --gutter:clamp(1rem,5vw,2.5rem);
+  --spring:cubic-bezier(.22,1,.36,1);
+}
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--sans);font-size:1.0625rem;line-height:1.6;
+  font-synthesis-weight:none;-webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+h1,h2,h3{margin:0;line-height:1.08;letter-spacing:-0.032em;font-weight:600;font-optical-sizing:auto}
+p{margin:0}
+a{color:var(--accent-ink)}
+code{font-family:var(--mono);font-size:.86em}
+img{display:block;max-inline-size:100%;block-size:auto}
+
+/* ---------- chrome: translucent layer, content scrolls under ---------- */
+.bar{
+  position:sticky;top:0;z-index:50;
+  display:flex;align-items:center;gap:1rem;
+  padding:.7rem var(--gutter);
+  background:color-mix(in srgb,var(--paper) 80%,transparent);
+  /* 14px and no saturate: a second filter pass over the full page width
+     repaints on every scroll frame and is not worth the extra depth. */
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  contain:layout paint;
+}
+.bar::after{
+  content:"";position:absolute;inset-inline:0;top:100%;block-size:28px;
+  background:linear-gradient(var(--paper),transparent);
+  opacity:0;transition:opacity .25s ease;pointer-events:none;
+}
+body[data-scrolled="true"] .bar::after{opacity:.9}
+.bar__mark{font-weight:600;letter-spacing:-0.02em;font-size:.95rem}
+.bar__mark span{color:var(--ink-3);font-weight:400;margin-left:.5rem}
+.bar__sp{flex:1}
+.swatches{display:flex;gap:.375rem}
+.sw{
+  inline-size:1.375rem;block-size:1.375rem;padding:0;cursor:pointer;
+  border-radius:999px;border:1.5px solid var(--line-strong);
+  transition:transform .32s var(--spring),box-shadow .2s ease;
+}
+.sw:hover{transform:scale(1.12)}
+.sw:active{transform:scale(.94);transition-duration:.1s}
+.sw[aria-pressed="true"]{box-shadow:0 0 0 2px var(--paper),0 0 0 3.5px var(--ink)}
+.sw:focus-visible,.ghost:focus-visible{outline:2px solid var(--sem-border-focus);outline-offset:2px}
+.ghost{
+  font:inherit;font-size:.8125rem;cursor:pointer;
+  padding:.3rem .7rem;border-radius:var(--r-btn);
+  background:transparent;color:var(--ink-2);border:1px solid var(--line-strong);
+  transition:transform .1s ease,background .15s ease;
+}
+.ghost:hover{background:var(--sem-bg-surface-hover);color:var(--ink)}
+.ghost:active{transform:scale(.97)}
+
+/* ---------- layout ---------- */
+.wrap{max-width:74rem;margin:0 auto;padding-inline:var(--gutter)}
+.col{max-width:var(--measure)}
+section{padding-block:clamp(4.5rem,10vw,8rem)}
+.rule{border:0;border-top:1px solid var(--line);margin:0}
+.eyebrow{font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);font-weight:500;margin-bottom:1.1rem}
+h2{font-size:clamp(1.75rem,3.6vw,2.6rem);margin-bottom:1rem;letter-spacing:-0.035em}
+h3{font-size:1.0625rem;margin-bottom:.4rem;letter-spacing:-0.012em}
+.body{color:var(--ink-2)}
+.body strong{color:var(--ink);font-weight:600}
+.note{font-size:.8125rem;color:var(--ink-3);margin-top:.85rem;line-height:1.5}
+
+/* No scroll reveal. A view()-timeline animation on eight full-height sections
+   promotes each one, images and all, to its own composited layer for the whole
+   entry range, which costs real frames on scroll. A fade that carries no meaning
+   is not worth that, so the sections just render. */
+
+/* ---------- hero ---------- */
+.hero{padding-top:clamp(3rem,7vw,5.5rem);padding-bottom:clamp(3rem,6vw,4.5rem)}
+.hero h1{font-size:clamp(2.5rem,7.6vw,5.25rem);letter-spacing:-0.046em;max-width:15ch}
+.hero h1 em{font-style:normal;color:var(--ink-3)}
+.lede{font-size:clamp(1.0625rem,1.8vw,1.25rem);line-height:1.5;color:var(--ink-2);margin-top:1.4rem;max-width:30rem}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));margin-top:clamp(2.5rem,5vw,3.5rem);border-top:1px solid var(--line)}
+.meta div{padding:.9rem 1rem .9rem 0;border-right:1px solid var(--line)}
+.meta div:last-child{border-right:0}
+.meta dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.3rem}
+.meta dd{margin:0;font-size:.9rem;color:var(--ink);font-weight:500}
+
+/* ---------- figures ---------- */
+.frame{
+  border:1px solid var(--line);border-radius:var(--r-card);
+  background:var(--card);overflow:hidden;
+}
+figure{margin:0}
+figcaption{margin-top:.7rem;font-size:.8125rem;color:var(--ink-3);line-height:1.45}
+figcaption b{color:var(--ink-2);font-weight:600;display:block}
+.trio{display:grid;gap:1.25rem;grid-template-columns:repeat(3,1fr);margin-top:2.5rem}
+.trio .frame{padding:1.25rem;display:flex;align-items:center;justify-content:center;min-block-size:14rem}
+.duo{display:grid;gap:1.25rem;grid-template-columns:repeat(2,1fr);margin-top:2.5rem}
+.wide{margin-top:2.5rem}
+
+/* ---------- live chain ---------- */
+.chain{margin-top:2.25rem;border:1px solid var(--line);border-radius:var(--r-card);background:var(--card);overflow:hidden}
+.chain__head{display:flex;align-items:center;gap:.7rem;padding:.8rem 1.25rem;border-bottom:1px solid var(--line);font-size:.8125rem;color:var(--ink-3)}
+.dot{inline-size:.8rem;block-size:.8rem;border-radius:999px;background:var(--accent);flex:none;transition:background .4s var(--spring)}
+.chain__row{display:grid;grid-template-columns:7rem 1fr auto;gap:1rem;align-items:center;padding:.85rem 1.25rem;border-bottom:1px solid var(--line)}
+.tier{font-size:.6875rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.chain__row code{color:var(--ink);word-break:break-all}
+.val{font-family:var(--mono);font-size:.8125rem;color:var(--ink-2);display:flex;align-items:center;gap:.5rem;white-space:nowrap}
+.val i{inline-size:1rem;block-size:1rem;border-radius:4px;border:1px solid var(--line-strong);flex:none;transition:background .4s var(--spring)}
+.val em{font-style:normal}
+.chain__foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));background:var(--sunk);margin:0;border-top:1px solid var(--line)}
+.chain__foot div{padding:.8rem 1.25rem;border-right:1px solid var(--line)}
+.chain__foot div:last-child{border-right:0}
+.chain__foot dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.chain__foot dd{margin:.28rem 0 0;font-size:.875rem;font-weight:500}
+
+/* ---------- failure modes ---------- */
+.modes{margin-top:2.25rem;border-top:1px solid var(--line);max-width:46rem}
+.mode{display:grid;grid-template-columns:2.5rem 1fr;gap:1rem;padding:1.15rem 0;border-bottom:1px solid var(--line)}
+.mode__n{font-family:var(--mono);font-size:.75rem;color:var(--ink-3);padding-top:.25rem}
+.mode p{color:var(--ink-2);margin-top:.2rem;font-size:.95rem}
+
+/* ---------- stats ---------- */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(12rem,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden;margin-top:2.25rem}
+.stat{background:var(--card);padding:1.4rem}
+.stat b{display:block;font-size:clamp(1.9rem,4.2vw,2.6rem);font-weight:600;letter-spacing:-0.045em;line-height:1;font-variant-numeric:tabular-nums}
+.stat span{display:block;margin-top:.45rem;font-size:.8125rem;color:var(--ink-3);line-height:1.4}
+.stat.good b{color:var(--accent-ink)}
+.stat.bad b{color:var(--bad)}
+
+/* ---------- live contrast evidence ---------- */
+.ramp{margin-top:2.25rem;display:grid;gap:.5rem}
+.ramp__row{
+  display:grid;grid-template-columns:1fr auto auto;gap:1rem;align-items:center;
+  padding:1rem 1.25rem;border-radius:var(--r-chip);background:var(--card);
+  border:1px solid var(--line);
+}
+.ramp__row .sample{font-size:1.0625rem;font-weight:500}
+.ramp__row .tok{font-family:var(--mono);font-size:.75rem;color:var(--ink-3);display:block;margin-top:.2rem;font-weight:400}
+.ratio{font-family:var(--mono);font-size:.9375rem;font-variant-numeric:tabular-nums;color:var(--ink-2)}
+.verdict{
+  font-size:.6875rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;
+  padding:.25rem .55rem;border-radius:999px;white-space:nowrap;
+}
+.verdict[data-pass="yes"]{background:var(--accent-soft);color:var(--accent-ink)}
+.verdict[data-pass="no"]{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+
+.fills{margin-top:2.25rem;display:grid;gap:1rem;grid-template-columns:repeat(3,1fr)}
+.fill{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line)}
+.fill__band{padding:1.5rem 1.25rem;display:grid;gap:.6rem}
+.fill__try{
+  display:flex;align-items:baseline;justify-content:space-between;gap:.75rem;
+  padding:.5rem .7rem;border-radius:var(--r-chip);font-size:.9375rem;font-weight:500;
+}
+.fill__try b{font-family:var(--mono);font-size:.75rem;font-weight:500;opacity:.85}
+.fill__try[data-win="yes"]{outline:2px solid currentColor;outline-offset:-2px}
+.fill__foot{padding:.7rem 1.1rem;background:var(--card);font-size:.8125rem;color:var(--ink-3);display:flex;justify-content:space-between;gap:.5rem;align-items:center}
+.fill__foot b{color:var(--ink);font-weight:600}
+
+/* ---------- typeface specimen ---------- */
+.specimens{margin-top:2.25rem;display:grid;gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r-card);overflow:hidden}
+.spec{background:var(--card);padding:1.4rem 1.5rem;display:flex;align-items:baseline;justify-content:space-between;gap:1.5rem;flex-wrap:wrap}
+.spec__big{font-size:clamp(1.6rem,4vw,2.4rem);letter-spacing:-0.035em;font-weight:600;line-height:1.1}
+.spec__name{font-size:.8125rem;color:var(--ink-3);font-family:var(--mono);white-space:nowrap}
+
+/* ---------- bugs ---------- */
+.bugs{margin-top:2.25rem;max-width:46rem}
+.bug{padding:1.6rem 0;border-bottom:1px solid var(--line)}
+.bug:first-child{border-top:1px solid var(--line)}
+.bug__tag{font-family:var(--mono);font-size:.75rem;color:var(--ink-3);margin-bottom:.5rem;display:block}
+.bug p{color:var(--ink-2);margin-top:.4rem;font-size:.95rem}
+.pull{margin-top:.9rem;padding:.8rem 1rem;border-left:2px solid var(--accent);background:var(--accent-soft);border-radius:0 var(--r-chip) var(--r-chip) 0;color:var(--ink);font-size:.925rem}
+
+/* ---------- component gallery ---------- */
+/* Cells are grouped by the shape of their capture, so no tile is mostly empty. */
+.gallery{display:grid;gap:1.25rem;grid-template-columns:repeat(6,1fr);margin-top:2.5rem;align-items:start}
+.gallery .frame{padding:1.1rem;display:grid;place-items:center}
+.gallery .frame img{max-block-size:100%;inline-size:auto;object-fit:contain}
+.frame--tall{aspect-ratio:3/4}
+.frame--wide{aspect-ratio:16/7}
+.g-3{grid-column:span 3}
+.g-2{grid-column:span 2}
+
+/* ---------- links ---------- */
+.links{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:2rem}
+.links a{
+  display:inline-flex;align-items:center;text-decoration:none;
+  padding:.55rem .95rem;border-radius:var(--r-btn);font-size:.9rem;font-weight:500;
+  border:1px solid var(--line-strong);color:var(--ink);
+  transition:transform .1s ease,background .15s ease;
+}
+.links a:hover{background:var(--sem-bg-surface-hover)}
+.links a:active{transform:scale(.98)}
+.links a.solid{background:var(--accent);color:var(--accent-fg);border-color:transparent}
+
+.open{padding-left:1.05rem;margin-top:1.1rem;max-width:40rem}
+.open li{margin-bottom:.5rem;color:var(--ink-2);font-size:.95rem}
+footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);color:var(--ink-3);font-size:.8125rem}
+
+@media (max-width:900px){
+  .fills{grid-template-columns:1fr}
+  .gallery{grid-template-columns:repeat(2,1fr)}
+  .g-3,.g-2{grid-column:span 1}
+}
+@media (max-width:760px){
+  .trio,.duo{grid-template-columns:1fr}
+  .chain__row{grid-template-columns:1fr;gap:.35rem}
+  .val{white-space:normal}
+  .meta div{border-right:0;border-bottom:1px solid var(--line)}
+  .ramp__row{grid-template-columns:1fr auto;row-gap:.5rem}
+  .gallery{grid-template-columns:1fr}
+  .g-3,.g-2{grid-column:span 1}
+  .frame--tall,.frame--wide{aspect-ratio:auto}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *{animation:none !important;transition-duration:.01ms !important}
+}
+@media (prefers-reduced-transparency:reduce){
+  .bar{background:var(--paper);backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:1px solid var(--line)}
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <span class="bar__mark">ERA<span>Case study</span></span>
+  <span class="bar__sp"></span>
+  <div class="swatches" role="group" aria-label="Brand">
+    <button class="sw" data-b="brand-1" aria-label="Brand 1" aria-pressed="true"  style="background:#5b5bd6"></button>
+    <button class="sw" data-b="brand-2" aria-label="Brand 2" aria-pressed="false" style="background:#3db9cf"></button>
+    <button class="sw" data-b="brand-3" aria-label="Brand 3" aria-pressed="false" style="background:#29a383"></button>
+  </div>
+  <button class="ghost" id="mode" aria-label="Toggle colour mode">Dark</button>
+</header>
+
+<main>
+
+<section class="hero wrap">
+  <p class="eyebrow">Design system · Self directed</p>
+  <h1>One system. Three brands. <em>No component knows which.</em></h1>
+  <p class="lede">Three brands and two colour modes out of a single component set. This page runs on ERA's own tokens, so the swatches above re-theme it.</p>
+  <dl class="meta">
+    <div><dt>Role</dt><dd>Design, tokens, components, docs</dd></div>
+    <div><dt>Brands</dt><dd>3, each with its own typeface</dd></div>
+    <div><dt>Components</dt><dd>23</dd></div>
+    <div><dt>Contrast</dt><dd>138 of 138 at AA</dd></div>
+  </dl>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">The claim</p>
+  <h2 class="col">One Button component. Three brands.</h2>
+  <p class="body col">Nothing in the markup changes between these. The accent, the typeface and the corner radius all come from tokens.</p>
+  <div class="trio">
+    <figure><div class="frame"><img src="img/b1-button.jpg" alt="ERA Button in Brand 1: purple fill, IBM Plex Sans, rounded corners." loading="lazy" decoding="async" width="810" height="882"></div>
+      <figcaption><b>Brand 1</b>Iris fill, white label, 8px radius.</figcaption></figure>
+    <figure><div class="frame"><img src="img/b2-button.jpg" alt="The same Button in Brand 2: cyan fill, Geist, square corners." loading="lazy" decoding="async" width="822" height="881"></div>
+      <figcaption><b>Brand 2</b>Cyan fill, dark label, 2px radius.</figcaption></figure>
+    <figure><div class="frame"><img src="img/b3-button.jpg" alt="The same Button in Brand 3: green fill, Source Sans 3, sharp corners." loading="lazy" decoding="async" width="772" height="883"></div>
+      <figcaption><b>Brand 3</b>Jade fill, dark label, square.</figcaption></figure>
+  </div>
+  <p class="note">Captured from Storybook at the same viewport, switching only the brand global.</p>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">The problem</p>
+  <h2 class="col">Four ways a shared library breaks</h2>
+  <div class="modes">
+    <div class="mode"><span class="mode__n">01</span><div><h3>The fork</h3><p>Someone copies Button into Button2 instead of finding the value that should have been a token.</p></div></div>
+    <div class="mode"><span class="mode__n">02</span><div><h3>The flag</h3><p>The component starts carrying <code>if (brand === 'b2')</code>, so every new brand means editing every component.</p></div></div>
+    <div class="mode"><span class="mode__n">03</span><div><h3>The quiet accessibility hole</h3><p>One accent passes contrast, the next one does not, and nobody checks. This is the one I hit.</p></div></div>
+    <div class="mode"><span class="mode__n">04</span><div><h3>The documentation lie</h3><p>The docs show one brand. Anyone building for the other two is guessing.</p></div></div>
+  </div>
+  <p class="body col" style="margin-top:1.75rem">Same root cause every time: <strong>the component is allowed to know something it should not.</strong></p>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">The architecture</p>
+  <h2 class="col">Three layers, one readable</h2>
+  <p class="body col">Primitives hold raw values. Brand re-points them per brand. Semantics re-points brand per mode, and is the only layer a component may read.</p>
+
+  <div class="chain">
+    <div class="chain__head"><span class="dot" aria-hidden="true"></span><span>Live, read from this page's computed styles</span></div>
+    <div class="chain__row"><span class="tier">Semantics</span><code>--sem-primary-bg</code><span class="val" data-token="--sem-primary-bg"><i></i><em></em></span></div>
+    <div class="chain__row"><span class="tier">Brand</span><code data-role>--brand-primary-roles-action</code><span class="val" data-token="--brand-primary-roles-action"><i></i><em></em></span></div>
+    <div class="chain__row"><span class="tier">Primitive</span><code data-primitive>--colors-iris-700</code><span class="val" data-token="--colors-iris-700"><i></i><em></em></span></div>
+    <dl class="chain__foot">
+      <div><dt>Typeface</dt><dd data-face>IBM Plex Sans</dd></div>
+      <div><dt>Button radius</dt><dd data-radius>8px</dd></div>
+      <div><dt>Label on fill</dt><dd data-onfill>White</dd></div>
+    </dl>
+  </div>
+  <p class="note">Switch brand or mode above and every row moves. The button reading <code>--sem-primary-bg</code> never learns that <span data-ramp>Iris</span> exists.</p>
+
+  <p class="body col" style="margin-top:2.25rem">The rule that holds it up: <strong>no component contains a hex value, a pixel radius, or a raw spacing number.</strong> That is what makes a fourth brand a data change, not a code change.</p>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">Figma to code</p>
+  <h2 class="col">A build that refuses to lie</h2>
+  <div class="stats">
+    <div class="stat"><b>762</b><span>Figma variables, three collections</span></div>
+    <div class="stat"><b>1,505</b><span>CSS custom properties generated</span></div>
+    <div class="stat"><b>6</b><span>brand and mode combinations, one source</span></div>
+  </div>
+  <p class="body col" style="margin-top:2rem">Tokens are exported from Figma and built, never hand written. <strong>The build exits non-zero on any reference that does not resolve</strong>, so Figma and code cannot quietly drift apart.</p>
+  <figure class="wide"><div class="frame"><img src="img/tokens.jpg" alt="The How tokens work page of the ERA documentation site." loading="lazy" decoding="async" width="1200" height="833"></div>
+    <figcaption>The token page, generated from the live build.</figcaption></figure>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">Accessibility</p>
+  <h2 class="col">The audit failed 10 of 23 pairs</h2>
+  <p class="body col">A live audit resolves the real computed colour of every foreground and background pair, per brand and per mode. Both causes were in the tokens, not in any component.</p>
+
+  <div class="stats">
+    <div class="stat bad"><b>10 / 23</b><span>below AA on the first run</span></div>
+    <div class="stat good"><b>138 / 138</b><span>at AA now, across three brands and two modes</span></div>
+    <div class="stat"><b>1</b><span>documented exemption per combination</span></div>
+  </div>
+
+  <h3 style="margin-top:3rem;font-size:1.25rem">The neutral ramp was carrying text</h3>
+  <p class="body col">Four ramp steps, rendered live on this page's surface. Only two can hold body text.</p>
+  <div class="ramp" data-ramp-grid>
+    <div class="ramp__row" data-step="700"><span class="sample">The quick brown fox<span class="tok">--brand-neutral-700</span></span><span class="ratio"></span><span class="verdict"></span></div>
+    <div class="ramp__row" data-step="800"><span class="sample">The quick brown fox<span class="tok">--brand-neutral-800</span></span><span class="ratio"></span><span class="verdict"></span></div>
+    <div class="ramp__row" data-step="900"><span class="sample">The quick brown fox<span class="tok">--brand-neutral-900</span></span><span class="ratio"></span><span class="verdict"></span></div>
+    <div class="ramp__row" data-step="950"><span class="sample">The quick brown fox<span class="tok">--brand-neutral-950</span></span><span class="ratio"></span><span class="verdict"></span></div>
+  </div>
+  <p class="note">Ratios computed in the browser from the resolved token values, in whichever mode you are viewing.</p>
+  <p class="body col" style="margin-top:1.5rem"><strong>Hierarchy in text comes from size and weight, not from a third grey.</strong></p>
+
+  <h3 style="margin-top:3rem;font-size:1.25rem">One token assumed brands are interchangeable</h3>
+  <p class="body col">The label on the solid fill was a single global white. Each card below is a real nested brand scope, measured live.</p>
+  <div class="fills" data-fills>
+    <div class="fill" data-brand="brand-1">
+      <div class="fill__band">
+        <div class="fill__try" data-fg="--colors-color-base-white"><span>White label</span><b></b></div>
+        <div class="fill__try" data-fg="--colors-grey-950"><span>Near black ink</span><b></b></div>
+      </div>
+      <div class="fill__foot"><span>Brand 1</span><b></b></div>
+    </div>
+    <div class="fill" data-brand="brand-2">
+      <div class="fill__band">
+        <div class="fill__try" data-fg="--colors-color-base-white"><span>White label</span><b></b></div>
+        <div class="fill__try" data-fg="--colors-grey-950"><span>Near black ink</span><b></b></div>
+      </div>
+      <div class="fill__foot"><span>Brand 2</span><b></b></div>
+    </div>
+    <div class="fill" data-brand="brand-3">
+      <div class="fill__band">
+        <div class="fill__try" data-fg="--colors-color-base-white"><span>White label</span><b></b></div>
+        <div class="fill__try" data-fg="--colors-grey-950"><span>Near black ink</span><b></b></div>
+      </div>
+      <div class="fill__foot"><span>Brand 3</span><b></b></div>
+    </div>
+  </div>
+  <p class="note">The outlined row is the one that passes. Both candidates are real tokens, white and <code>--colors-grey-950</code>, measured against each brand's own fill. There is no single answer across the three, which is the finding. The fix was a brand role token so each brand answers for its own fill.</p>
+
+  <h3 style="margin-top:3rem;font-size:1.25rem">The one exemption</h3>
+  <p class="body col">A disabled control's label sits below 4.5:1 on purpose. WCAG 1.4.3 exempts inactive controls, and a disabled button at full contrast stops reading as disabled. It moved from <strong>1.68:1 to 3.33:1</strong>: legible, without pretending to be active.</p>
+
+  <figure class="wide"><div class="frame"><img src="img/audit.jpg" alt="The accessibility page of the ERA documentation site." loading="lazy" decoding="async" width="1200" height="957"></div>
+    <figcaption>The audit lives in Storybook, because a document can claim a pass and a live audit cannot.</figcaption></figure>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">What went wrong</p>
+  <h2 class="col">Three bugs worth writing down</h2>
+
+  <div class="specimens">
+    <div class="spec"><span class="spec__big" style="font-family:'IBM Plex Sans'">Release payment</span><span class="spec__name">Brand 1 · IBM Plex Sans</span></div>
+    <div class="spec"><span class="spec__big" style="font-family:'Geist'">Release payment</span><span class="spec__name">Brand 2 · Geist</span></div>
+    <div class="spec"><span class="spec__big" style="font-family:'Source Sans 3'">Release payment</span><span class="spec__name">Brand 3 · Source Sans 3</span></div>
+  </div>
+  <p class="note">Three faces, actually loaded. For weeks they were not, and nothing looked broken.</p>
+
+  <div class="bugs">
+    <div class="bug">
+      <span class="bug__tag">01 · silent fallback</span>
+      <h3>Three typefaces that were never loaded</h3>
+      <p>The tokens were right. The brands were switching. Every one of them rendered in the system font stack, because no web font was ever loaded.</p>
+      <p>I fixed it in Storybook. Building this page, I checked the docs site the same way and found the identical bug still live there: zero font files shipped, no <code>@font-face</code> rules. Every screenshot here was retaken after fixing it.</p>
+      <div class="pull">A multi brand system fails silently by design, because the fallback of any brand looks like a plausible brand.</div>
+    </div>
+    <div class="bug">
+      <span class="bug__tag">02 · wrong mental model</span>
+      <h3>Custom properties resolve where they are declared</h3>
+      <p>The semantic layer was declared on <code>&lt;html&gt;</code>, so a nested brand scope resolved against the root brand and showed the wrong accent. A custom property is substituted where it is <strong>declared</strong>, not where it is used. The three fill cards above are that fix working.</p>
+    </div>
+    <div class="bug">
+      <span class="bug__tag">03 · shared primitive</span>
+      <h3>The menu that sized to the wrong thing</h3>
+      <p>Menu and Select share a popup surface. A Select's options should match its trigger, because that is the control's shape. A Menu's items should size to their content, because they are commands. One surface, two rules.</p>
+    </div>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">What shipped</p>
+  <h2 class="col">23 components, weighted to the hard parts</h2>
+  <p class="body col">A field with seven states, a menu implementing the full WAI-ARIA menu button pattern, a Select built as a listbox. Modal is a real <code>&lt;dialog&gt;</code>, Accordion is <code>&lt;details&gt;</code>, so in-page find still works.</p>
+
+  <div class="gallery">
+    <figure class="g-2"><div class="frame frame--tall"><img src="img/c-button.jpg" alt="ERA Button in five intents." loading="lazy" decoding="async" width="810" height="882"></div><figcaption><b>Button</b>Five intents, chosen by hierarchy.</figcaption></figure>
+    <figure class="g-2"><div class="frame frame--tall"><img src="img/c-input.jpg" alt="ERA Input component in seven states." loading="lazy" decoding="async" width="776" height="1303"></div><figcaption><b>Input</b>Seven states, one component.</figcaption></figure>
+    <figure class="g-2"><div class="frame frame--tall"><img src="img/c-alert.jpg" alt="ERA Alert component in four tones." loading="lazy" decoding="async" width="900" height="636"></div><figcaption><b>Alert</b>Four tones, optional actions.</figcaption></figure>
+    <figure class="g-3"><div class="frame frame--wide"><img src="img/c-badge.jpg" alt="ERA Badge component matrix." loading="lazy" decoding="async" width="788" height="418"></div><figcaption><b>Badge</b>Tone and variant matrix.</figcaption></figure>
+    <figure class="g-3"><div class="frame frame--wide"><img src="img/c-card.jpg" alt="ERA Card component elevations." loading="lazy" decoding="async" width="900" height="190"></div><figcaption><b>Card</b>Elevation as hierarchy.</figcaption></figure>
+  </div>
+
+  <div class="duo">
+    <figure><div class="frame"><img src="img/button.jpg" alt="The Button documentation page with a live playground." loading="lazy" decoding="async" width="1200" height="957"></div>
+      <figcaption><b>Component pages</b>When to reach for it, and when not to.</figcaption></figure>
+    <figure><div class="frame"><img src="img/colour.jpg" alt="The colour foundations page generated from live tokens." loading="lazy" decoding="async" width="1200" height="957"></div>
+      <figcaption><b>Foundations</b>Generated from live tokens, so they cannot go stale.</figcaption></figure>
+  </div>
+
+  <p class="body col" style="margin-top:2rem"><strong>Storybook is for the person building the component. The docs are for the person deciding whether to use it.</strong></p>
+
+  <div class="links">
+    <a class="solid" href="https://darkhack4949.github.io/Era-Design-Foundation-Story-book/" target="_blank" rel="noopener">Documentation site</a>
+    <a href="https://darkhack4949.github.io/Era-Design-Foundation-Story-book/storybook/" target="_blank" rel="noopener">Storybook</a>
+    <a href="https://github.com/DARKHACK4949/Era-Design-Foundation-Story-book" target="_blank" rel="noopener">Repository</a>
+  </div>
+</section>
+
+<hr class="rule">
+
+<section class="wrap">
+  <p class="eyebrow">Reflection</p>
+  <h2 class="col">What I would do differently</h2>
+  <div class="modes">
+    <div class="mode"><span class="mode__n">01</span><div><h3>Audit contrast before building components</h3><p>The audit was the highest value thing I built, and I built it last. At the token stage it would have caught the global white on day one.</p></div></div>
+    <div class="mode"><span class="mode__n">02</span><div><h3>Verify what renders, not what is configured</h3><p>The typeface bug existed because I checked the tokens instead of checking what the browser drew.</p></div></div>
+    <div class="mode"><span class="mode__n">03</span><div><h3>Decide the token set deliberately</h3><p>Around 40 unused brand role tokens are a bet on future need. Unused tokens teach people that tokens are optional.</p></div></div>
+  </div>
+  <h3 style="margin-top:2rem">Still open</h3>
+  <ul class="open">
+    <li>A changelog, so consumers do not have to diff it themselves.</li>
+    <li>Search covers page titles only, not prose.</li>
+    <li>Visual regression tests. A token change that breaks Brand 2 dark is currently only caught by someone looking.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer class="wrap"><p>ERA is a self directed design system. This page runs on its tokens and switches with it.</p></footer>
+
+<script>
+(function(){
+  var root=document.documentElement, body=document.body;
+  /* Exact chain, read off the generated stylesheet:
+     light  --sem-primary-bg -> --brand-primary-roles-action      -> --colors-<ramp>-<step>
+     dark   --sem-primary-bg -> --brand-primary-dark-roles-action -> --colors-<ramp>-dark-<step>
+     Brand 2's action role sits on step 600, Brands 1 and 3 on 700. */
+  var RAMP={'brand-1':'iris','brand-2':'cyan','brand-3':'jade'};
+  var STEP={'brand-1':'700','brand-2':'600','brand-3':'700'};
+  var FACE={'brand-1':'IBM Plex Sans','brand-2':'Geist','brand-3':'Source Sans 3'};
+
+  function read(el,name){ return getComputedStyle(el).getPropertyValue(name).trim(); }
+
+  function lum(c){
+    var m=/^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec((c||'').trim()), r,g,b;
+    if(m){ var h=m[1]; if(h.length===3) h=h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+      r=parseInt(h.slice(0,2),16); g=parseInt(h.slice(2,4),16); b=parseInt(h.slice(4,6),16);
+    } else { var n=(c||'').match(/[\d.]+/g); if(!n||n.length<3) return null; r=+n[0]; g=+n[1]; b=+n[2]; }
+    var f=function(v){ v/=255; return v<=0.03928?v/12.92:Math.pow((v+0.055)/1.055,2.4); };
+    return 0.2126*f(r)+0.7152*f(g)+0.0722*f(b);
+  }
+  function ratio(a,b){
+    var la=lum(a), lb=lum(b);
+    if(la===null||lb===null) return null;
+    return (Math.max(la,lb)+0.05)/(Math.min(la,lb)+0.05);
+  }
+
+  function paintChain(){
+    var brand=root.getAttribute('data-brand'); if(!RAMP[brand]) brand='brand-1';
+    var dark=root.getAttribute('data-theme')==='dark';
+    var roleName='--brand-primary'+(dark?'-dark':'')+'-roles-action';
+    var primName='--colors-'+RAMP[brand]+(dark?'-dark':'')+'-'+STEP[brand];
+
+    var rc=document.querySelector('[data-role]');
+    if(rc){ rc.textContent=roleName; rc.closest('.chain__row').querySelector('.val').setAttribute('data-token',roleName); }
+    var pc=document.querySelector('[data-primitive]');
+    if(pc){ pc.textContent=primName; pc.closest('.chain__row').querySelector('.val').setAttribute('data-token',primName); }
+
+    document.querySelectorAll('.val').forEach(function(el){
+      var v=read(root,el.getAttribute('data-token'));
+      var sw=el.querySelector('i'), tx=el.querySelector('em');
+      if(sw) sw.style.background=v;
+      if(tx) tx.textContent=v||'not set';
+    });
+
+    var ramp=document.querySelector('[data-ramp]');
+    if(ramp) ramp.textContent=RAMP[brand].charAt(0).toUpperCase()+RAMP[brand].slice(1);
+    var face=document.querySelector('[data-face]'); if(face) face.textContent=FACE[brand];
+    var rad=document.querySelector('[data-radius]'); if(rad) rad.textContent=read(root,'--brand-radius-roles-buttons-button-md');
+    var onfill=document.querySelector('[data-onfill]');
+    if(onfill){
+      var fg=read(root,'--sem-primary-fg-on-bg');
+      var L=lum(fg);
+      onfill.textContent=(L!==null&&L>0.5?'White':'Near black')+(fg?' · '+fg:'');
+    }
+  }
+
+  function paintRamp(){
+    var dark=root.getAttribute('data-theme')==='dark';
+    var surface=read(root,'--sem-bg-surface');
+    document.querySelectorAll('.ramp__row').forEach(function(row){
+      var step=row.getAttribute('data-step');
+      var token='--brand-neutral'+(dark?'-dark':'')+'-'+step;
+      var c=read(root,token);
+      var sample=row.querySelector('.sample');
+      sample.style.color=c;
+      row.querySelector('.tok').textContent=token;
+      var r=ratio(c,surface);
+      var out=row.querySelector('.ratio'), v=row.querySelector('.verdict');
+      if(r===null){ out.textContent=''; v.textContent=''; return; }
+      out.textContent=r.toFixed(2)+':1';
+      var pass=r>=4.5;
+      v.textContent=pass?'Body text':'Borders only';
+      v.setAttribute('data-pass',pass?'yes':'no');
+    });
+  }
+
+  function paintFills(){
+    var mode=root.getAttribute('data-theme');
+    document.querySelectorAll('.fill').forEach(function(card){
+      card.setAttribute('data-theme',mode); /* nested scope needs the mode re-declared on it */
+      var bg=read(card,'--sem-primary-bg');
+      var correct=read(card,'--sem-primary-fg-on-bg');
+      var best=-1, bestEl=null;
+      card.querySelectorAll('.fill__try').forEach(function(t){
+        t.parentNode.style.background=bg;
+        var fg=read(root,t.getAttribute('data-fg'));
+        t.style.color=fg;
+        var r=ratio(fg,bg);
+        t.querySelector('b').textContent=r?r.toFixed(2)+':1':'';
+        t.removeAttribute('data-win');
+        if(r&&r>best){ best=r; bestEl=t; }
+      });
+      if(bestEl) bestEl.setAttribute('data-win','yes');
+      var L=lum(correct);
+      var foot=card.querySelector('.fill__foot b');
+      if(foot) foot.textContent=(L!==null&&L>0.5?'White':'Near black');
+    });
+  }
+
+  function paint(){ paintChain(); paintRamp(); paintFills(); }
+
+  document.querySelectorAll('.sw').forEach(function(b){
+    b.addEventListener('pointerdown',function(){ /* respond on press, not release */
+      root.setAttribute('data-brand',b.dataset.b);
+      document.querySelectorAll('.sw').forEach(function(o){ o.setAttribute('aria-pressed',String(o===b)); });
+      try{localStorage.setItem('era-cs-brand',b.dataset.b);}catch(e){}
+      paint();
+    });
+  });
+
+  var mode=document.getElementById('mode');
+  function setMode(m){
+    root.setAttribute('data-theme',m);
+    mode.textContent=(m==='dark'?'Light':'Dark');
+    try{localStorage.setItem('era-cs-mode',m);}catch(e){}
+    paint();
+  }
+  mode.addEventListener('click',function(){ setMode(root.getAttribute('data-theme')==='dark'?'light':'dark'); });
+
+  try{
+    var sb=localStorage.getItem('era-cs-brand');
+    if(sb&&RAMP[sb]){
+      root.setAttribute('data-brand',sb);
+      document.querySelectorAll('.sw').forEach(function(o){ o.setAttribute('aria-pressed',String(o.dataset.b===sb)); });
+    }
+    var sm=localStorage.getItem('era-cs-mode');
+    if(sm==='dark'||sm==='light') setMode(sm);
+  }catch(e){}
+
+  var ticking=false;
+  window.addEventListener('scroll',function(){
+    if(ticking) return; ticking=true;
+    requestAnimationFrame(function(){ body.setAttribute('data-scrolled',String(window.scrollY>8)); ticking=false; });
+  },{passive:true});
+
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(paint);
+  paint();
+})();
+</script>
+</body>
+</html>
