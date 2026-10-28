@@ -20,7 +20,7 @@ export default function Page() {
       <main>
       <section className="hero wrap">
         <p className="eyebrow">Design system · Self directed</p>
-        <h1>One component set. <em><span className="nb">Three brands.</span> <span className="nb">Light and dark.</span></em></h1>
+        <h1><span className="nb">Three brands.</span> <em>Without three design systems.</em></h1>
         <p className="lede">No button or card knows which brand it is in. The brand lives in the tokens, and components only read tokens. The swatches above re-theme this page live.</p>
         <p className="lede" style={{marginTop:'1.1rem'}}>
           I built it to take a branded house past where a Figma library stops:
