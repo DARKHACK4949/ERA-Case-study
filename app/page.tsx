@@ -20,12 +20,12 @@ export default function Page() {
       <main>
       <section className="hero wrap">
         <p className="eyebrow">Design system · Self directed</p>
-        <h1>One set of components <em>runs three brands, in light and dark.</em></h1>
-        <p className="lede">No button, card or input knows which brand it is in. The brand lives in the tokens, and the components only ever read those. This page runs on the same tokens, so the swatches above re-theme it.</p>
+        <h1>One component set. <em><span className="nb">Three brands.</span> <span className="nb">Light and dark.</span></em></h1>
+        <p className="lede">No button or card knows which brand it is in. The brand lives in the tokens, and components only read tokens. The swatches above re-theme this page live.</p>
         <p className="lede" style={{marginTop:'1.1rem'}}>
-          I built it to take a branded house further than a Figma library goes:
+          I built it to take a branded house past where a Figma library stops:
           into tokens, components, docs and the code that ships them. Most of
-          what is on this page is what I found out by doing that.
+          this page is what I found out doing that.
         </p>
         {/* Fills the right half with the thesis rather than whitespace: the
             wordmark is set in whichever brand is active, so it changes face,

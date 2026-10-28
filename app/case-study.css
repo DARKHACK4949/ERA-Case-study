@@ -157,6 +157,9 @@ html.js .in{opacity:1;transform:none}
 /* ---------- hero ---------- */
 .hero{padding-top:clamp(3rem,7vw,5.5rem);padding-bottom:clamp(3rem,6vw,4.5rem)}
 .hero h1{font-size:clamp(2.25rem,4.6vw,4rem);max-width:17ch}
+/* Each sentence of the headline stays whole, so it never breaks as
+ * "Light" / "and dark." across two lines. */
+.hero h1 .nb{white-space:nowrap}
 .hero h1 em{font-style:normal;color:var(--ink-3)}
 .lede{font-size:clamp(1.0625rem,1.5vw,1.1875rem);line-height:1.65;color:var(--ink-2);margin-top:1.4rem;max-width:30rem}
 /* Explicit column counts rather than auto-fit. auto-fit picks a count from
