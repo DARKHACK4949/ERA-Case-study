@@ -69,7 +69,10 @@ body[data-scrolled="true"] .bar::after{opacity:.9}
 .bar__mark{display:flex;align-items:center;gap:.6rem;font-size:1rem;color:var(--ink)}
 .bar__mark b{font-weight:600;letter-spacing:-0.01em}
 .bar__mark svg{flex:none;display:block}
-.bar__mark span{color:var(--ink-3);font-weight:400;margin-left:.5rem}
+/* On a narrow screen this was breaking across two lines and making the
+ * header twice as tall. Below 460 the mark alone carries it. */
+.bar__mark span{color:var(--ink-3);font-weight:400;margin-left:.5rem;white-space:nowrap}
+@media (max-width:459px){ .bar__mark span{display:none} }
 .bar__sp{flex:1}
 /* Enough room for the selected ring to sit in its own space rather than
    crowding its neighbour. */

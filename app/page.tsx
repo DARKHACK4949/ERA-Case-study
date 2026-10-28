@@ -20,8 +20,8 @@ export default function Page() {
       <main>
       <section className="hero wrap">
         <p className="eyebrow">Design system · Self directed</p>
-        <h1>One system. Three brands. <em>No component knows which.</em></h1>
-        <p className="lede">Three brands and two colour modes out of a single component set. This page runs on ERA's own tokens, so the swatches above re-theme it.</p>
+        <h1>One set of components <em>runs three brands, in light and dark.</em></h1>
+        <p className="lede">No button, card or input knows which brand it is in. The brand lives in the tokens, and the components only ever read those. This page runs on the same tokens, so the swatches above re-theme it.</p>
         <p className="lede" style={{marginTop:'1.1rem'}}>
           I built it to take a branded house further than a Figma library goes:
           into tokens, components, docs and the code that ships them. Most of
