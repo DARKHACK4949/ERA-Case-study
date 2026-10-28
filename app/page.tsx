@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import Interactive from '@/components/Interactive';
 import Mark from '@/components/Mark';
+import Lockup from '@/components/Lockup';
 
 export default function Page() {
   return (
@@ -8,7 +9,7 @@ export default function Page() {
       <div className="progress" aria-hidden="true"></div>
       
       <header className="bar">
-        <span className="bar__mark"><Mark size={26} /><b>ERA</b><span>Case study</span></span>
+        <span className="bar__mark"><Lockup height={24} /><span>Case study</span></span>
         <span className="bar__sp"></span>
         <div className="swatches" role="group" aria-label="Brand">
           <button className="sw" data-b="brand-1" aria-label="Brand 1" aria-pressed="true"  style={{"background": "#5b5bd6"}}></button>

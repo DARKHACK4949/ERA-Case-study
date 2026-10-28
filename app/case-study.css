@@ -67,7 +67,6 @@ img{display:block;max-inline-size:100%;block-size:auto}
 }
 body[data-scrolled="true"] .bar::after{opacity:.9}
 .bar__mark{display:flex;align-items:center;gap:.6rem;font-size:1rem;color:var(--ink)}
-.bar__mark b{font-weight:600;letter-spacing:-0.01em}
 .bar__mark svg{flex:none;display:block}
 /* On a narrow screen this was breaking across two lines and making the
  * header twice as tall. Below 460 the mark alone carries it. */
