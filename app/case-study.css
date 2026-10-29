@@ -45,7 +45,10 @@ h2{font-weight:500;line-height:1.2;letter-spacing:-0.02em}
 h3{font-weight:600;line-height:1.4;letter-spacing:-0.008em}
 p{margin:0}
 a{color:var(--accent-ink)}
-code{font-family:var(--mono);font-size:.86em}
+/* Relative, so code tracks the text it sits in, but never below the
+   smallest step on the ERA type scale. .86em of 13px copy was 11.18px,
+   which is a size the system does not have. */
+code{font-family:var(--mono);font-size:max(.75rem,.86em)}
 img{display:block;max-inline-size:100%;block-size:auto}
 
 /* ---------- chrome: translucent layer, content scrolls under ---------- */
@@ -127,6 +130,9 @@ html.js :where(
   transition:opacity .62s var(--ease-out),transform .62s var(--ease-out);
 }
 html.js .in{opacity:1;transform:none}
+/* Printing never scrolls, so the observer never fires and every section
+   would come out of the printer blank. */
+@media print{ html.js :where(*){opacity:1!important;transform:none!important} }
 
 /* ---------- scroll progress: one 2px element, transform only ---------- */
 .progress{
@@ -196,7 +202,7 @@ html.js .in{opacity:1;transform:none}
   .meta div{border-right:0;padding-inline:0}
   .meta div:last-child{border-bottom:0}
 }
-.meta dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.3rem}
+.meta dt{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3);margin-bottom:.3rem}
 .meta dd{text-wrap:balance}
 .meta dd{margin:0;font-size:.9rem;line-height:1.45;color:var(--ink);font-weight:500}
 
@@ -219,6 +225,13 @@ figure{margin:0}
 figcaption{margin-top:.7rem;font-size:.8125rem;color:var(--ink-3);line-height:1.45}
 figcaption b{color:var(--ink-2);font-weight:600;display:block}
 .trio{display:grid;gap:1.25rem;grid-template-columns:repeat(3,1fr);margin-top:2.5rem}
+/* Three captures of the same screen in three brands, so the three captions
+   have to start on one line. The shots are not the same pixel height, and a
+   caption that simply follows its image lands a few pixels off its neighbours,
+   which on a page about consistency is the first thing you see. The figure is
+   a grid instead: the frame takes the free row and the caption sits on the
+   bottom row, so every caption is on the same line whatever the shot height. */
+.trio figure{display:grid;grid-template-rows:1fr auto;block-size:100%}
 .trio .frame{padding:1.25rem;display:flex;align-items:center;justify-content:center;min-block-size:14rem}
 .duo{display:grid;gap:1.25rem;grid-template-columns:repeat(2,1fr);margin-top:2.5rem}
 .wide{margin-top:2.5rem}
@@ -228,7 +241,7 @@ figcaption b{color:var(--ink-2);font-weight:600;display:block}
 .chain__head{display:flex;align-items:center;gap:.7rem;padding:.8rem 1.25rem;border-bottom:1px solid var(--line);font-size:.8125rem;color:var(--ink-3)}
 .dot{inline-size:.8rem;block-size:.8rem;border-radius:999px;background:var(--accent);flex:none;transition:background .4s var(--spring)}
 .chain__row{display:grid;grid-template-columns:7rem 1fr auto;gap:1rem;align-items:center;padding:.85rem 1.25rem;border-bottom:1px solid var(--line)}
-.tier{font-size:.6875rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
+.tier{font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)}
 .chain__row code{color:var(--ink);word-break:break-all}
 .val{font-family:var(--mono);font-size:.8125rem;color:var(--ink-2);display:flex;align-items:center;gap:.5rem;white-space:nowrap}
 .val i{inline-size:1rem;block-size:1rem;border-radius:4px;border:1px solid var(--line-strong);flex:none;transition:background .4s var(--spring)}
@@ -236,7 +249,7 @@ figcaption b{color:var(--ink-2);font-weight:600;display:block}
 .chain__foot{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));background:var(--sunk);margin:0;border-top:1px solid var(--line)}
 .chain__foot div{padding:.8rem 1.25rem;border-right:1px solid var(--line)}
 .chain__foot div:last-child{border-right:0}
-.chain__foot dt{font-size:.6875rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.chain__foot dt{font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
 .chain__foot dd{margin:.28rem 0 0;font-size:.875rem;font-weight:500}
 
 /* ---------- failure modes ---------- */
@@ -264,11 +277,18 @@ figcaption b{color:var(--ink-2);font-weight:600;display:block}
 .ramp__row .tok{font-family:var(--mono);font-size:.75rem;color:var(--ink-3);display:block;margin-top:.2rem;font-weight:400}
 .ratio{font-family:var(--mono);font-size:.9375rem;font-variant-numeric:tabular-nums;color:var(--ink-2)}
 .verdict{
-  font-size:.6875rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;
+  font-size:.75rem;letter-spacing:.07em;text-transform:uppercase;font-weight:600;
   padding:.25rem .55rem;border-radius:999px;white-space:nowrap;
 }
 .verdict[data-pass="yes"]{background:var(--accent-soft);color:var(--accent-ink)}
-.verdict[data-pass="no"]{background:color-mix(in srgb,var(--bad) 12%,transparent);color:var(--bad)}
+/* The tint and the ink were both --bad, which left the label itself at
+   4.34:1 on the tint it sits on. A verdict that reads "borders only"
+   should not be the one piece of text on the page failing the check it
+   is reporting, so the ink is darkened against the same tint. */
+.verdict[data-pass="no"]{
+  background:color-mix(in srgb,var(--bad) 12%,transparent);
+  color:color-mix(in srgb,var(--bad) 78%,var(--ink));
+}
 
 .fills{margin-top:2.25rem;display:grid;gap:1rem;grid-template-columns:repeat(3,1fr)}
 .fill{border-radius:var(--r-card);overflow:hidden;border:1px solid var(--line)}
@@ -439,7 +459,7 @@ footer{padding:2.5rem var(--gutter) 3.5rem;border-top:1px solid var(--line);colo
 }
 .brandcard__facts > div:last-child { border-bottom: 0; }
 .brandcard__facts dt {
-  font-size: .6875rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
+  font-size: .75rem; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3);
 }
 .brandcard__facts dd { margin: 0; font-size: .875rem; font-weight: 500; }
 .brandcard__hex { display: flex; align-items: center; gap: .5rem; font-family: var(--mono); font-size: .8125rem; }
