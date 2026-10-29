@@ -9,6 +9,12 @@
  * and a second observer or scroll listener would double the work.
  */
 export default function init() {
+  /* Tells the head script that the entrance is in hands that can finish it.
+     Without this the failsafe there strips the `js` class and the page
+     simply shows, which is the right outcome when this module never
+     arrives and the wrong one when it does. */
+  document.documentElement.setAttribute('data-entrance', 'on');
+
   const cleanups = [];
 
   var root=document.documentElement, body=document.body;
@@ -110,9 +116,12 @@ export default function init() {
     }
 
     function paintFills(){
-      var mode=root.getAttribute('data-theme');
       document.querySelectorAll('.fill').forEach(function(card){
-        card.setAttribute('data-theme',mode); /* nested scope needs the mode re-declared on it */
+        /* The nested brand scope used to need the mode stamped on it here so
+           the semantic layer would be re-declared on the card. The token build
+           now emits that layer for [data-theme] [data-brand] as well, so the
+           card resolves its own brand from CSS alone and this is one less thing
+           that has to run before the page is correct. */
         var bg=read(card,'--sem-primary-bg');
         var correct=read(card,'--sem-primary-fg-on-bg');
         var best=-1, bestEl=null;
