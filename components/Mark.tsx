@@ -3,28 +3,23 @@ type Props = { size?: number };
 /**
  * The mark on its own, no wordmark. This is what the app icon uses.
  *
- * Three squares stepping along a diagonal, resolving from an open outline to
- * half filled to solid: a primitive, then the brand layer pointing at it, then
- * the semantic value a component actually reads.
+ * Three plates in oblique projection. ERA is three token layers, and the plate
+ * on top is the one a component is allowed to read.
  *
- * Below 32px the reduced form is used. A hole inside a four pixel square
- * cannot be drawn, so the three states collapse into grey mush; all three go
- * solid instead and the diagonal does the work.
+ * The path data is exactly as supplied. Two things about the file around it
+ * had to change: the fill is currentColor rather than black, because the mark
+ * sits on a dark surface half the time and a black mark on near black is an
+ * empty header, and the white background rectangle is gone for the same
+ * reason. The viewBox is the artwork's own bounding box rather than the 255
+ * square it was drawn in, so the mark fills the height it is given instead of
+ * sitting in a third of it.
  */
 export default function Mark({ size = 20 }: Props) {
-  return size < 32 ? (
-    <svg width={size} height={size} viewBox="0 0 126 126" fill="currentColor"
-         role="img" aria-label="ERA" focusable="false">
-      <rect x="0"  y="90" width="36" height="36" rx="9"/>
-      <rect x="45" y="45" width="36" height="36" rx="9"/>
-      <rect x="90" y="0"  width="36" height="36" rx="9"/>
-    </svg>
-  ) : (
-    <svg width={size} height={size} viewBox="0 0 126 126" fill="currentColor"
-         role="img" aria-label="ERA" focusable="false">
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M9 90C4.02944 90 0 94.0294 0 99V117C0 121.971 4.02944 126 9 126H27C31.9706 126 36 121.971 36 117V99C36 94.0294 31.9706 90 27 90H9ZM9 99H27V117H9V99Z"/>
-      <path fill-rule="evenodd" clip-rule="evenodd" d="M54 45C49.0294 45 45 49.0294 45 54V72C45 76.9706 49.0294 81 54 81H72C76.9706 81 81 76.9706 81 72V54C81 49.0294 76.9706 45 72 45H54ZM54 54H63V72H54V54Z"/>
-      <rect x="90" y="0" width="36" height="36" rx="9"/>
+  return (
+    <svg width={size} height={(size * 150.5) / 136.0} viewBox="59 53.5 136 150.5" fill="currentColor" role="img" aria-label="ERA" focusable="false">
+      <path d="M97 136.5L59 117V141.5L97 161.5L195 112.5V88L97 136.5Z" />
+      <path d="M97 179L59 159.5V184L97 204L195 155V130.5L97 179Z" />
+      <path d="M96.5 119L59 100L155 53.5L194.5 69L96.5 119Z" />
     </svg>
   );
 }
